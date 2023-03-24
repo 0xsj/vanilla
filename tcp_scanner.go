@@ -36,20 +36,32 @@ func main() {
 	go func() {
 		for i := 1; i <= 1024; i++ {
 			ports <- i
+			// fmt.Printf("Sent port %d to worker\n", i)
 		}
 	}()
 
-	for i := 0; i < 1024; i++ {
-		port := <-results
+	// we then collect the results from the results channel, and appends the open ports to the slice defined
+	// for i := 0; i < 1024; i++ {
+	// 	port := <-results
+	// 	if port != 0 {
+	// 		openports = append(openports, port)
+	// 	}
+	// }
+
+	for port := range results {
 		if port != 0 {
 			openports = append(openports, port)
+			fmt.Printf("Port %d is open\n", port)
+		} else {
+			// fmt.Printf("Port %d is closed\n", port)
 		}
 	}
 
 	close(ports)
 	close(results)
 	sort.Ints(openports)
-	for _, port := range openports {
+	fmt.Println("Open ports:")
+	for _, port := range openports { // finallt we want to sort and print the port numbers
 		fmt.Printf("%d open\n", port)
 	}
 }
